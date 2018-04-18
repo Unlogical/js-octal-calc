@@ -17,7 +17,7 @@ function isUnaryPostOperator(character) {
 }
 
 function isDigit(character) {
-	return (parseInt(character) < 10 && parseInt(character) >= 0);
+	return (parseInt(character) < 10 && parseInt(character) >= 0 || character == "∞");
 }
 
 function isUnaryOperator(character) {
@@ -198,7 +198,7 @@ function performBinaryOperation (a, b, operator) {
     case "÷": {
       if (b == 0) {
         if (a == 0) {
-          console.log("unknown (0 divide by 0")
+          console.log("unknown (0 divide by 0)")
           return "";
         } else {
           console.log("division by zero");
@@ -315,6 +315,9 @@ function intOctal(number) {
 }
 
 function changeScaleToOctal(number) {
+  if (!isFinite(number)) {
+    return "∞";
+  }
   return +intOctal(number) + +fractOctal(number);
 }
 
@@ -325,9 +328,6 @@ function clearString(inputString) {
 function calculate(inputString) {
   return changeScaleToOctal(doCalculations(changeNotation(changeScaleToDecimal(clearString(inputString)))));
 }
-
-
-
 
 
 function ready(){
@@ -342,15 +342,20 @@ function ready(){
       numbers[i].addEventListener("click", function(e){
         var number = e.target.innerHTML;
         var currentString = input.innerHTML;
-          var lastChar = currentString[currentString.length - 1];
+        var lastChar = currentString[currentString.length - 1];
         if (isPossible(number, currentString)) {
-        if (resultDisplayed) {
-          input.innerHTML = "";
-          resultDisplayed = false;
-        }
-          changeFontSize(input, currentString+number);
-          input.innerHTML += number;
-        } else if (number == "." && isEmptyLike(currentString)){
+          if (resultDisplayed) {
+            input.innerHTML = "";
+            resultDisplayed = false;
+          }
+          if(number != ".") {
+            changeFontSize(input, currentString+number);
+            input.innerHTML += number;
+          } else {
+            changeFontSize(input, currentString+"0.");
+            input.innerHTML +="0.";
+          } 
+        } else if (number == "." && (isEmptyLike(currentString) || isBinaryOperator(lastChar))) {
           changeFontSize(input, currentString+"0.");
           input.innerHTML +="0.";
         }
@@ -379,17 +384,21 @@ function ready(){
       })
     }
 
-    clear.addEventListener("click", function(e) {
-      input.innerHTML = "";
-      paranthesesFlag = 0;
-    })
-
     result.addEventListener("click", function(e) {
       var inputString = input.innerHTML;
       var outcome = calculate(inputString);
       changeFontSize(input, String(outcome));
       input.innerHTML = outcome;
       resultDisplayed = true; 
+    })
+
+    clear.addEventListener("click", function(e) {
+      input.innerHTML = "";
+      paranthesesFlag = 0;
+    })
+
+    deleteLast.addEventListener("click", function(e) {
+      input.innerHTML = input.innerHTML.substr(0, input.innerHTML.length - 1);
     })
 }
 
