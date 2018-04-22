@@ -70,7 +70,7 @@ function changeMinuses(inputString) {
 function removeTrashOperators(currentString) {
 	var lastChar = currentString[currentString.length - 1];
 	while(isBinaryOperator(lastChar) || isUnaryPreOperator(lastChar)) {
-		currentString = currentString.replace(lastChar, "");
+		currentString = currentString.slice(0, -1);
 		lastChar = currentString[currentString.length - 1];
 	}
 	return currentString;
